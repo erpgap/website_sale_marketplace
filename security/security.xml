@@ -1,0 +1,6 @@
+<odoo>
+    <record id="group_marketplace_seller" model="res.groups">
+        <field name="name">Marketplace Seller</field>
+        <field name="category_id" ref="base.module_category_website"/>
+    </record>
+</odoo>
