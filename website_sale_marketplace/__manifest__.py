@@ -9,16 +9,15 @@
     'summary': 'Post, Sell, its your marketplace',
     'description': """ """,
     'depends': [
-        'base',
-        'website',
+        'website_sale',
         'portal',
-        'product',
+        'contacts',
     ],
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
-        'views/marketplace_users_views.xml',
-    #    'views/marketplace_company_views.xml'
+        'views/res_users_views.xml',
+        'views/res_partner_views.xml',
     ],
     'installable': True,
     'application': False,
