@@ -18,6 +18,7 @@
         'security/ir.model.access.csv',
         'views/res_users_views.xml',
         'views/res_partner_views.xml',
+        'views/website_views.xml',
     ],
     'installable': True,
     'application': False,
