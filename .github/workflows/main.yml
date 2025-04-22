@@ -1,0 +1,16 @@
+name: Production Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          cd /opt/odoo/custom/
+          git pull origin main
+          cd ..
+          source .venv/bin/activate
+          odoo-bin -u all
