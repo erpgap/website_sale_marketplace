@@ -19,6 +19,7 @@
         'views/res_users_views.xml',
         'views/res_partner_views.xml',
         'views/website_views.xml',
+        'wizard/marketplace_wizard_views.xml',
     ],
     'installable': True,
     'application': False,
