@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
-          cd /opt/odoo/custom/
+          cd ~/opt/odoo/custom/
           git pull origin main
           cd ..
           source .venv/bin/activate
