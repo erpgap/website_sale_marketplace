@@ -1,16 +1,12 @@
-name: Deploy em Produção
-
-on:
-  workflow_dispatch:
-
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, linux, x64]
     steps:
-      - name: Atualizar código e rodar Odoo
+      - uses: actions/checkout@v3
+      - name: Atualizar e reiniciar Odoo
         run: |
           cd /opt/odoo/custom/
           git pull origin main
-          cd ..
-          source .venv/bin/activate
-          odoo-bin -u all
+          source /opt/odoo/.venv/bin/activate
+          /opt/odoo/odoo-bin -c  --max-cron-threads=0 --no-http --stop-after-init -u all
+
