@@ -13,4 +13,4 @@ jobs:
           git pull origin main
           cd ..
           source .venv/bin/activate
-          odoo-bin -u all
+          odoo-bin --max-cron-threads=0 --no-http --stop-after-init -u all
