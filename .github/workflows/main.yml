@@ -1,9 +1,14 @@
+name: Production Deploy
+
+on:
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: [self-hosted, linux, x64]
     steps:
       - uses: actions/checkout@v3
-      - name: Atualizar e reiniciar Odoo
+      - name: Update and Restart Odoo
         run: |
           cd /opt/odoo/custom/
           git pull origin main
