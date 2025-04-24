@@ -4,15 +4,14 @@ on:
   # Auto-run on pushes to test-dev
   push:
     branches:
-      - test-dev
+      - dev
 
   # Enable manual runs on any branch
   workflow_dispatch:
 
 jobs:
-  test-dev:
-    # Only on push to test-dev
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/test-dev' }}
+  dev:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/dev' }}
     runs-on: [self-hosted, linux, x64]
     steps:
       - name: Checkout code
@@ -24,13 +23,13 @@ jobs:
 
   test-main:
     # Only when manually triggered on test-main
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/test-main' }}
-    needs: test-dev
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    needs: dev
     runs-on: [self-hosted, linux, x64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run test-main Tasks
+      - name: Run main Tasks
         run: |
           echo "Executing tests/preparations on the test-main branch"
