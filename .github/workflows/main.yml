@@ -19,7 +19,7 @@ jobs:
 
       - name: Run test-dev Update
         run: |
-          sudo su - egap -c '~/.local/bin/odoo-update dev'
+          sudo su - egap -c '~/.local/bin/odoo-update dev -y'
 
   test-main:
     # Only when manually triggered on test-main
@@ -29,4 +29,6 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
-      - run: echo "Running on test-main"
+      - name: Run test-dev Update
+        run: |
+          sudo su - egap -c '~/.local/bin/odoo-update odoo -y'
