@@ -22,7 +22,7 @@ jobs:
           sudo su - egap -c '~/.local/bin/odoo-update dev --force'
 
   test-main:
-    # Only when manually triggered on test-main
+    # Only when manually triggered test-main
     if: |
       github.event_name == 'workflow_dispatch' &&
       github.event.ref == 'refs/heads/main'
