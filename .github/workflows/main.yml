@@ -1,17 +1,36 @@
-name: Production Deploy
+name: CI Pipeline
 
 on:
+  # Automatically run on pushes to test-dev
+  push:
+    branches:
+      - dev
+
+  # Adds a “Run workflow” button for manual execution
   workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: [self-hosted, linux, x64]
+  dev:
+    # Only runs on push events to test-dev
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/test-dev' }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Update and Restart Odoo
-        run: |
-          cd /opt/odoo/custom/
-          git pull origin main
-          source /opt/odoo/.venv/bin/activate
-          /opt/odoo/odoo-bin -c  --max-cron-threads=0 --no-http --stop-after-init -u all
+      - name: Checkout code
+        uses: actions/checkout@v3
 
+      - name: Run test-dev Update
+        run: |
+          sudo su - egap -c '~/.local/bin/odoo-update dev'
+
+  main:
+    # Only runs when manually triggered on test-main
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    #needs: test-dev    # optional: skip or wait for test-dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run main Tasks
+        run: |
+          echo "Executing on the test-main branch"
