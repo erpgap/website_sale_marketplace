@@ -8,4 +8,4 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     is_marketplace_vendor = fields.Boolean(
-        related='partner_id.is_marketplace', store=True, string="Marketplace Vendor", readonly=True)
+        related='is_marketplace', store=True, string="Marketplace Vendor", readonly=True)
