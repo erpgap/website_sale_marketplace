@@ -23,13 +23,10 @@ jobs:
 
   test-main:
     # Only when manually triggered on test-main
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
-    needs: dev
-    runs-on: [self-hosted, linux, x64]
+    if: |
+      github.event_name == 'workflow_dispatch' &&
+      github.event.ref == 'refs/heads/main'
+    runs-on: self-hosted
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run main Tasks
-        run: |
-          echo "Executing tests/preparations on the test-main branch"
+      - uses: actions/checkout@v3
+      - run: echo "Running on test-main"
