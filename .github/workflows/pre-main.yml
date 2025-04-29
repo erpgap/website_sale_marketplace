@@ -3,7 +3,7 @@ name: Deploy Pre-Main
 on:
   push:
     tags:
-      - 'pro-*'
+      - 'prod-*'
 
 jobs:
   deploy-pre-main:
