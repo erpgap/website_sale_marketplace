@@ -1,17 +1,12 @@
-name: CI Pipeline
+name: CI Pipeline - Dev
 
 on:
-  # Auto-run on pushes to test-dev
   push:
     branches:
       - dev
 
-  # Enable manual runs on any branch
-  workflow_dispatch:
-
 jobs:
   dev:
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/dev' }}
     runs-on: [self-hosted, linux, x64]
     steps:
       - name: Checkout code
@@ -19,14 +14,4 @@ jobs:
 
       - name: Run test-dev Update
         run: |
-          sudo su - egap -c '~/.local/bin/odoo-update dev'
-
-  test-main:
-    # Only when manually triggered on test-main
-    if: |
-      github.event_name == 'workflow_dispatch' &&
-      github.event.ref == 'refs/heads/main'
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v3
-      - run: echo "Running on test-main"
+          sudo su - egap -c '~/.local/bin/odoo-update dev --force'
