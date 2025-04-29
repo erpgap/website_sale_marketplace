@@ -1,11 +1,11 @@
-name: CI Pipeline - Main (Manual)
+name: CI Pipeline - Main
 
 on:
   workflow_dispatch:
 
 jobs:
-  test-main:
-    if: github.ref == 'refs/heads/main'
+  pre-main:
+    if: github.ref == 'refs/heads/pre-main'
     runs-on: self-hosted
     steps:
       - name: Checkout code
