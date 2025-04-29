@@ -1,17 +1,14 @@
-name: CI Pipeline - Dev
+name: Manual Trigger Placeholder
 
 on:
   push:
     branches:
-      - dev
+      - main
+
 
 jobs:
-  dev:
-    runs-on: [self-hosted, linux, x64]
+  noop:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run test-dev Update
-        run: |
-          sudo su - egap -c '~/.local/bin/odoo-update dev --force'
+      - name: No operation
+        run: echo "This workflow is intentionally empty."
