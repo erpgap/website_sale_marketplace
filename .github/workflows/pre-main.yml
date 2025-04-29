@@ -1,18 +1,17 @@
-name: CI Pipeline - Main (Manual)
+name: Deploy Pre-Main
 
 on:
   push:
-    branches:
-      - pre-main
-  workflow_dispatch:
+    tags:
+      - 'pro-*'
 
 jobs:
-  test-main:
-    runs-on: self-hosted
+  deploy-pre-main:
+    runs-on: [self-hosted, linux, x64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run test-dev Update
+      - name: Run pre-main Update
         run: |
           sudo su - egap -c '~/.local/bin/odoo-update odoo --force'
