@@ -15,6 +15,7 @@
         'product',
         'uom',
         'html_editor',
+        'stock_dropshipping'
     ],
     'data': [
         'security/security.xml',
