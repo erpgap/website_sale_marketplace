@@ -27,6 +27,9 @@
         'views/portal_templates.xml',
     ],
     'assets': {
+        'web.assets_backend': [
+            'website_sale_marketplace/static/src/views/product_kanban.scss',
+        ],
         'website_sale_marketplace.webclient': [
             ('include', 'web._assets_helpers'),
             ('include', 'web._assets_backend_helpers'),
