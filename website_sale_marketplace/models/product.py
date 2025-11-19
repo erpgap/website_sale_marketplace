@@ -2,6 +2,7 @@
 # Copyright 2024 ERPGAP/PROMPTEQUATION LDA
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools import float_round
 
 
@@ -45,7 +46,31 @@ class ProductTemplate(models.Model):
         return vendor_partner.marketplace_markup or 0.0
 
     def write(self, vals):
-        """Recalculate cost when sales price changes for vendor products"""
+        """Recalculate cost when sales price changes and reset marketplace state on vendor changes"""
+        # Fields that should trigger state reset to 'draft' for marketplace products
+        vendor_editable_fields = {
+            'name', 'list_price', 'description', 'description_sale', 'description_ecommerce',
+            'categ_id', 'uom_id', 'uom_po_id', 'image_1920', 'website_description'
+        }
+
+        # Check if vendor is editing their own product and changing significant fields
+        should_reset_state = False
+        if any(field in vals for field in vendor_editable_fields):
+            vendor_partner = self._get_vendor_partner()
+            if vendor_partner:
+                for product in self:
+                    # Reset state if vendor is editing their own marketplace product
+                    # and it's currently in 'approved' state
+                    if (product.marketplace_vendor_id == vendor_partner and
+                        product.marketplace_state == 'approved' and
+                        'marketplace_state' not in vals):  # Don't reset if state is being set explicitly
+                        should_reset_state = True
+                        break
+
+        # If state should be reset, add it to vals
+        if should_reset_state and 'marketplace_state' not in vals:
+            vals['marketplace_state'] = 'draft'
+
         result = super().write(vals)
 
         # Only recalculate if list_price changed
@@ -136,3 +161,33 @@ class ProductTemplate(models.Model):
                     'min_qty': 1.0,
                     'price': cost_price,
                 })
+
+    def action_send_for_approval(self):
+        """Send marketplace product for approval"""
+        for product in self:
+            if product.marketplace_vendor_id and product.marketplace_state == 'draft':
+                product.marketplace_state = 'approval'
+
+    def action_approve(self):
+        """Approve marketplace product (backend users only)"""
+        for product in self:
+            if product.marketplace_vendor_id and product.marketplace_state == 'approval':
+                product.marketplace_state = 'approved'
+
+    def action_set_draft(self):
+        """Set marketplace product back to draft"""
+        for product in self:
+            if product.marketplace_vendor_id:
+                product.marketplace_state = 'draft'
+
+    @api.constrains('is_published', 'marketplace_vendor_id', 'marketplace_state')
+    def _check_marketplace_publish(self):
+        """Prevent publishing marketplace products that are not approved"""
+        for product in self:
+            if (product.marketplace_vendor_id and
+                product.is_published and
+                product.marketplace_state != 'approved'):
+                raise ValidationError(
+                    'Marketplace products must be approved before they can be published on the website. '
+                    f'Current state: {dict(product._fields["marketplace_state"].selection).get(product.marketplace_state)}'
+                )
