@@ -100,7 +100,7 @@
                         <group>
                             <field name="list_price" string="Sales Price"/>
                             <field name="uom_id" required="1" options="{'no_create': True}"/>
-                            <field name="marketplace_vendor_id" invisible="1"/>
+                            <field name="marketplace_vendor_id" invisible="1" readonly="1"/>
                             <field name="company_id" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
                         </group>

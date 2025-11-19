@@ -88,8 +88,6 @@ class ProductTemplate(models.Model):
                             sale_price / (1 + markup_percent),
                             precision_digits=2
                         )
-                        print(cost_price)
-                        print(sale_price , (1 + markup_percent))
                     else:
                         cost_price = sale_price
 
