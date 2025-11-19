@@ -2,12 +2,19 @@
 # Copyright 2024 ERPGAP/PROMPTEQUATION LDA
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 from odoo import api, fields, models
+from odoo.tools import float_round
 
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     marketplace_vendor_id = fields.Many2one('res.partner', string='Marketplace Vendor')
+    marketplace_state = fields.Selection([
+        ('draft', 'Draft'),
+        ('approval', 'Pending Approval'),
+        ('approved', 'Approved'),
+    ], string='Marketplace State', default='draft', tracking=True,
+       help='Marketplace products must be approved before they can be published on the website')
     description_ecommerce = fields.Html(
         string='eCommerce Description',
         translate=True,
@@ -28,6 +35,52 @@ class ProductTemplate(models.Model):
                 return user.partner_id
 
         return None
+
+    def _get_marketplace_markup(self, vendor_partner):
+        """Get marketplace markup for product, checking category first then vendor"""
+        # Check if category has marketplace_markup set
+        if self.categ_id and self.categ_id.marketplace_markup:
+            return self.categ_id.marketplace_markup
+        # Fall back to vendor's marketplace_markup
+        return vendor_partner.marketplace_markup or 0.0
+
+    def write(self, vals):
+        """Recalculate cost when sales price changes for vendor products"""
+        result = super().write(vals)
+
+        # Only recalculate if list_price changed
+        if 'list_price' in vals:
+            for product in self:
+                vendor_partner = product.marketplace_vendor_id
+                if vendor_partner:
+                    # Get marketplace markup (category first, then vendor)
+                    markup_percent = product._get_marketplace_markup(vendor_partner)
+                    sale_price = product.list_price or 0.0
+
+                    # Calculate new cost
+                    if markup_percent > 0:
+                        cost_price = float_round(
+                            sale_price / (1 + markup_percent),
+                            precision_digits=2
+                        )
+                        print(cost_price)
+                        print(sale_price , (1 + markup_percent))
+                    else:
+                        cost_price = sale_price
+
+                    # Update product cost (use sudo for portal users)
+                    if product.sudo().standard_price != cost_price:
+                        product.sudo().write({'standard_price': cost_price})
+
+                    # Update supplierinfo price
+                    supplierinfo = self.env['product.supplierinfo'].sudo().search([
+                        ('product_tmpl_id', '=', product.id),
+                        ('partner_id', '=', vendor_partner.id)
+                    ], limit=1)
+                    if supplierinfo and supplierinfo.price != cost_price:
+                        supplierinfo.sudo().write({'price': cost_price})
+
+        return result
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -57,16 +110,29 @@ class ProductTemplate(models.Model):
 
         for product in products:
             if product.marketplace_vendor_id == vendor_partner:
-                # Set dropship route
-                if dropship_route:
-                    product.write({
-                        'route_ids': [(4, dropship_route.id)]
-                    })
+                # Get marketplace markup (category first, then vendor)
+                markup_percent = product._get_marketplace_markup(vendor_partner)
 
-                # Create supplierinfo record
+                # Calculate cost based on markup: cost = sale_price / (1 + markup/100)
+                sale_price = product.list_price or 0.0
+                if markup_percent > 0:
+                    cost_price = float_round(
+                        sale_price / (1 + markup_percent / 100.0),
+                        precision_rounding=0.01
+                    )
+                else:
+                    cost_price = sale_price
+
+                # Set dropship route and cost
+                update_vals = {'standard_price': cost_price}
+                if dropship_route:
+                    update_vals['route_ids'] = [(4, dropship_route.id)]
+                product.write(update_vals)
+
+                # Create supplierinfo record with calculated cost
                 self.env['product.supplierinfo'].create({
                     'partner_id': vendor_partner.id,
                     'product_tmpl_id': product.id,
                     'min_qty': 1.0,
-                    'price': product.list_price or 0.0,
+                    'price': cost_price,
                 })

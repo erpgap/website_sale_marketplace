@@ -22,6 +22,7 @@
         'security/ir.model.access.csv',
         'views/res_users_views.xml',
         'views/res_partner_views.xml',
+        'views/product_category_views.xml',
         'views/product_views.xml',
         'views/portal_templates.xml',
     ],
