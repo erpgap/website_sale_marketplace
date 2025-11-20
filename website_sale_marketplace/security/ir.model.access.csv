@@ -8,3 +8,5 @@ access_product_category_portal_vendor,product.category.portal.vendor,product.mod
 access_uom_uom_portal_vendor,uom.uom.portal.vendor,uom.model_uom_uom,base.group_portal,1,0,0,0
 access_account_tax_portal_vendor,account.tax.portal.vendor,account.model_account_tax,base.group_portal,1,0,0,0
 access_account_account_tag_portal_vendor,account.account.tag.portal.vendor,account.model_account_account_tag,base.group_portal,1,0,0,0
+access_product_supplierinfo_portal_vendor,product.supplierinfo.portal.vendor,product.model_product_supplierinfo,base.group_portal,1,0,0,0
+access_stock_route_portal_vendor,stock.route.portal.vendor,stock.model_stock_route,base.group_portal,1,0,0,0

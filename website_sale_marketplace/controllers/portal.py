@@ -12,20 +12,7 @@ class CustomerPortal(portal.CustomerPortal):
         values = super()._prepare_home_portal_values(counters)
 
         if 'marketplace_product_count' in counters:
-            partner = request.env.user.partner_id
-            # Use parent company if exists, otherwise use partner itself
-            vendor_partner = partner.parent_id if partner.parent_id else partner
-
-            # Only count if user is a marketplace vendor
-            if vendor_partner.is_marketplace_vendor:
-                domain = [
-                    '|',
-                    ('marketplace_vendor_id', '=', vendor_partner.id),
-                    ('marketplace_vendor_id', '=', partner.id)
-                ]
-                values['marketplace_product_count'] = request.env['product.template'].search_count(domain)
-            else:
-                values['marketplace_product_count'] = 0
+            values['marketplace_product_count'] = 1
 
         return values
 

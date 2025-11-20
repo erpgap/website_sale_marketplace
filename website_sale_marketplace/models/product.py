@@ -67,11 +67,21 @@ class ProductTemplate(models.Model):
                         should_reset_state = True
                         break
 
-        # If state should be reset, add it to vals
+        # If state should be reset, add it to vals and unpublish the product
         if should_reset_state and 'marketplace_state' not in vals:
             vals['marketplace_state'] = 'draft'
+            # Unpublish the product since it needs re-approval
+            vals['is_published'] = False
 
-        result = super().write(vals)
+        # Check if user is a portal vendor
+        vendor_partner = self._get_vendor_partner()
+        is_portal_vendor = bool(vendor_partner)
+
+        # Portal vendors need sudo to write products (same reason as create - stock module accesses routes)
+        if is_portal_vendor:
+            result = super(ProductTemplate, self.sudo()).write(vals)
+        else:
+            result = super().write(vals)
 
         # Only recalculate if list_price changed
         if 'list_price' in vals:
@@ -140,8 +150,8 @@ class ProductTemplate(models.Model):
                 sale_price = product.list_price or 0.0
                 if markup_percent > 0:
                     cost_price = float_round(
-                        sale_price / (1 + markup_percent / 100.0),
-                        precision_rounding=0.01
+                        sale_price / (1 + markup_percent),
+                        precision_digits=2
                     )
                 else:
                     cost_price = sale_price
