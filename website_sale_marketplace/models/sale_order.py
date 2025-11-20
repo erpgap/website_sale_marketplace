@@ -44,16 +44,10 @@ class SaleOrder(models.Model):
 
                 if is_marketplace and is_dropship:
                     has_marketplace_dropship = True
-                    _logger.info(
-                        f'SO {self.name}: PO {po.name} line has marketplace dropship product: '
-                        f'{product_tmpl.name} (vendor: {product_tmpl.marketplace_vendor_id.name})'
-                    )
                     break
 
             if has_marketplace_dropship:
                 try:
-                    _logger.info(f'SO {self.name}: Auto-confirming marketplace PO {po.name}')
                     po.button_confirm()
-                    _logger.info(f'SO {self.name}: Successfully confirmed marketplace PO {po.name}')
                 except Exception as e:
                     _logger.error(f'SO {self.name}: Failed to auto-confirm PO {po.name}: {str(e)}', exc_info=True)

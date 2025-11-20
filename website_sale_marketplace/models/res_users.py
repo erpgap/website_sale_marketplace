@@ -12,10 +12,6 @@ class ResUsers(models.Model):
 
     @api.depends('partner_id.is_marketplace_vendor', 'partner_id.parent_id.is_marketplace_vendor')
     def _compute_is_marketplace_vendor(self):
-        """
-        Compute the is_marketplace_vendor field for each user.
-        This field indicates whether the user is a marketplace vendor or not.
-        """
         for user in self:
             user.is_marketplace_vendor = user.partner_id.is_marketplace_vendor or \
                                          user.partner_id.parent_id.is_marketplace_vendor or False
