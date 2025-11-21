@@ -15,6 +15,7 @@
         'product',
         'uom',
         'html_editor',
+        'sale_management',
         'stock_dropshipping'
     ],
     'data': [
