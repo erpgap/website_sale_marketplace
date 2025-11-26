@@ -3,7 +3,7 @@
 # License LGPL-3.0 or later (http://www.gnu.org/licenses/lgpl).
 {
     'name': 'Marketplace',
-    'version': '19.0.0.0.1',
+    'version': '19.0.0.0.2',
     'category': 'Sales',
     'license': 'AGPL-3',
     'summary': 'Post, Sell, its your marketplace',
@@ -134,5 +134,5 @@
         ],
     },
     'installable': True,
-    'application': False,
+    'application': True,
 }
