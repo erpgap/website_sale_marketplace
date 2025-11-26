@@ -7,6 +7,7 @@
     'category': 'Sales',
     'license': 'AGPL-3',
     'summary': 'Post, Sell, its your marketplace',
+    'website': 'https://www.erpgap.com',
     'description': """ """,
     'depends': [
         'website_sale',
